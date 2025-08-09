@@ -48,6 +48,8 @@ hugo new posts/first-post.md
 
 ## 構成図
 
+![構成図](docs/system-architect.drawio.png)
+
 ## 初期設定
 
 Macで以下を設定
