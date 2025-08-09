@@ -4,23 +4,23 @@
 
 ### プロフィールページを作る
 
-初期設定は以下(内容は書いていくこと)
+初期設定は以下(内容は書いていくこと)。
 
 ```bash
 hugo new about.md
 ```
 
-### プライバシーポリシー・免責事項ページ
+### プライバシーポリシーの作成
 
-初期設定は以下(内容は適宜アップデートすること)
+初期設定は以下(内容は適宜アップデートすること)。
 
 ```bash
 hugo new privacy.md
 ```
 
-### 問い合わせページの作成
+### お問い合わせページの作成
 
-初期設定は以下(内容は適宜アップデートすること)
+初期設定は以下(内容は適宜アップデートすること)。
 
 ```bash
 hugo new contact.md
@@ -28,7 +28,7 @@ hugo new contact.md
 
 ### 投稿の追加
 
-毎回mdファイルのタイトルを考えて、作成していくこと
+毎回mdファイルのタイトルを考えて、作成していくこと。
 
 ```bash
 hugo new posts/first-post.md
@@ -39,12 +39,12 @@ hugo new posts/first-post.md
 ## 初期設定
 
 Macで以下を設定
+(GitHubでのベースの設定が完了している前提)。
 
 ```bash
 brew install hugo
-hugo new site blog
-cd blog
-git init
+hugo new site zipishi-blog
+cd zipishi-blog
 git submodule add https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod
 touch config.toml
 rm hugo.toml

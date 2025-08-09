@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>旅行 on ぢぴ氏の育児奮闘記</title>
+    <link>http://localhost:1313/tags/%E6%97%85%E8%A1%8C/</link>
+    <description>Recent content in 旅行 on ぢぴ氏の育児奮闘記</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>ja</language>
+    <lastBuildDate>Thu, 07 Aug 2025 12:00:00 +0900</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E6%97%85%E8%A1%8C/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>おでかけ行ったよ</title>
+      <link>http://localhost:1313/posts/second-post/</link>
+      <pubDate>Thu, 07 Aug 2025 12:00:00 +0900</pubDate>
+      <guid>http://localhost:1313/posts/second-post/</guid>
+      <description>&lt;p&gt;今日は家族で梅小路公園のポテルに泊ったのだよ。&lt;/p&gt;
+&lt;p&gt;今度紹介するのだよ。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

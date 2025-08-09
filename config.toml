@@ -1,0 +1,78 @@
+baseURL = "http://localhost:1313/"
+languageCode = "ja"
+title = "ぢぴ氏の育児奮闘記"
+theme = "PaperMod"
+
+[params]
+  defaultTheme = "auto"             # ダーク・ライト自動切替
+  ShowShareButtons = true           # SNS共有ボタン
+  ShowReadingTime = true            # 読了時間を表示
+  ShowCodeCopyButtons = true        # コードのコピーアイコン
+  ShowPostNavLinks = true           # 次/前の記事リンク
+  ShowBreadCrumbs = true            # パンくずリスト
+  ShowToc = true                    # 記事内目次
+  tocOpen = true                    # デフォルトで目次を展開
+  ShowImageInList = true         # ← 記事一覧に画像を表示
+  ShowImageInSingle = true       # ← 記事ページにも表示
+
+[params.homeInfoParams]
+  Title = "ぢぴ氏"
+  Content = """
+  京都在住、30代の子育てママです( ＾∀＾)
+
+  第一子、ちゃ太郎との日常のあれこれを綴ります
+
+  
+  ![プロフィール画像](/images/zipishi-chataro.png)
+
+  [Instagram](https://instagram.com/zipishi_/)
+  """
+
+[params.assets]
+  favicon = "favicon.ico"
+  css = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css", "css/custom.css"]
+
+[menu]
+  [[menu.main]]
+    identifier = "about"
+    name = "プロフィール"
+    url = "/about/"
+    weight = 10
+
+  [[menu.main]]
+    name = "カテゴリー"
+    url = "/categories/"
+    weight = 20
+
+  [[menu.main]]
+    name = "タグ"
+    url = "/tags/"
+    weight = 30
+
+  [[menu.main]]
+    name = "検索"
+    url = "/search/"
+    weight = 40
+
+  [[menu.main]]
+    name = "アーカイブ"
+    url = "/archives/"
+    weight = 50
+
+  [[menu.main]]
+    name = "プライバシーポリシー"
+    url = "/privacy/"
+    weight = 60
+
+  [[menu.main]]
+    name = "お問い合わせ"
+    url = "/contact/"
+    weight = 70
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[outputs]
+    home = ["HTML", "RSS", "JSON"]

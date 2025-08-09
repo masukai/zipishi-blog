@@ -1,0 +1,199 @@
+:root {
+  --theme: #f8e0e6;
+  --entry: #f9c6d5;
+  --primary: #e23d56;
+  --secondary: #f2a7b8;
+  --tertiary: #f4d2da;
+  --content: #2b2b2b;        /* 文字は濃いグレー */
+  --hljs-bg: #fae1e6;
+  --code-bg: #fae1e6;
+  --border: #e0a3b1;
+}
+
+.dark {
+  --theme: #2d1f28;
+  --entry: #3d1a26;
+  --primary: #e23d56;
+  --secondary: #d98a97;
+  --tertiary: #5d2a34;
+  --content: #f5f5f5;        /* ダークは明るい文字色 */
+  --hljs-bg: #3d1a26;
+  --code-bg: #5d2a34;
+  --border: #d98a97;
+}
+
+/* —— 可読性アップの強制上書き —— */
+/* 本文 */
+.post-entry .content,
+.post-entry p,
+.post-content,
+.entry-content,
+.single .post-description,
+.archive-entry .entry-content {
+  color: var(--content) !important;
+  opacity: 1 !important;
+}
+
+/* リストの要約文（excerpt） */
+.post-entry .entry-content,
+.archive-entry .entry-content p {
+  color: var(--content) !important;
+  opacity: 1 !important;
+}
+
+/* メタ情報（日時・著者など） */
+.post-meta,
+.entry-footer,
+.archive-entry .post-time {
+  color: #5b5b5b !important;   /* 中間グレーで十分なコントラスト */
+  opacity: 1 !important;
+}
+
+/* タイトルは差し色で */
+.post-title,
+.entry-title {
+  color: var(--primary) !important;
+  opacity: 1 !important;
+}
+
+/* === Tag Chip 用の変数（ピンク基調×高コントラスト） === */
+:root {
+  --chip-bg: #ffe3ea;         /* 背景：うすい赤ピンク */
+  --chip-text: #7a1e2a;       /* 文字：濃い赤茶＝読みやすい */
+  --chip-border: #f3a8b8;     /* 枠線 */
+  --chip-hover-bg: #ffd1dc;   /* hover時：少しだけ濃く */
+  --chip-hover-text: #5e1420; /* hover時の文字 */
+  --chip-focus: #e23d56;      /* フォーカスリング */
+}
+.dark {
+  --chip-bg: #4a2b33;         /* ダーク：落ち着いた赤茶 */
+  --chip-text: #ffd7e1;       /* 文字は明るく */
+  --chip-border: #b96b7d;
+  --chip-hover-bg: #5a313b;
+  --chip-hover-text: #fff0f4;
+  --chip-focus: #f98cba;
+}
+
+/* === タグ（chips）共通ルール === */
+/* PaperModで出がちなセレクタを網羅 */
+.post-tags a,
+.tags a,
+.taxonomy .terms a,
+.terms-tags a,
+a[rel="tag"],
+a.tag,
+.tag-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .35em;
+  padding: .35rem .6rem;
+  margin: .25rem .35rem .25rem 0;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text) !important;
+  border: 1px solid var(--chip-border);
+  font-weight: 600;          /* ほんの少し太くして視認性UP */
+  font-size: .95rem;         /* 小さすぎを回避 */
+  line-height: 1.2;
+  letter-spacing: .01em;
+  text-decoration: none;
+  opacity: 1 !important;     /* テーマの薄色化を打ち消す */
+  transition: background .15s ease, color .15s ease, transform .05s ease;
+}
+
+.post-tags a:hover,
+.tags a:hover,
+.taxonomy .terms a:hover,
+.terms-tags a:hover,
+a[rel="tag"]:hover,
+a.tag:hover,
+.tag-link:hover {
+  background: var(--chip-hover-bg);
+  color: var(--chip-hover-text) !important;
+  transform: translateY(-1px);
+}
+
+.post-tags a:focus-visible,
+.tags a:focus-visible,
+.taxonomy .terms a:focus-visible,
+.terms-tags a:focus-visible,
+a[rel="tag"]:focus-visible,
+a.tag:focus-visible,
+.tag-link:focus-visible {
+  outline: 3px solid var(--chip-focus);
+  outline-offset: 2px;
+}
+
+/* タグのカウントが出るテーマ用（例： “旅行 (12)” のカッコ数字） */
+.post-tags a .count,
+.tags a .count,
+.taxonomy .terms a .count {
+  font-weight: 700;
+  opacity: .9;
+}
+
+/* タグ周りの見出しもコントラスト確保 */
+.post-tags-title,
+.tags-title,
+.taxonomy-title {
+  color: var(--primary);
+  font-weight: 700;
+  opacity: 1;
+}
+
+.home-info img {
+  display: block;
+  margin: 0 auto;
+  width: 200px;
+  border-radius: 50%;
+}
+
+.home-info {
+  text-align: center;
+}
+
+.custom-share-buttons {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.custom-share-buttons a.share-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.custom-share-buttons a.share-icon:hover {
+  background-color: #eee;
+}
+
+/* 記事一覧（トップページなど）の cover 画像 */
+.post-entry .entry-cover img {
+  aspect-ratio: 16 / 9; /* 縦横比を固定 */
+  width: 100%;          /* 横幅いっぱい */
+  height: auto;         /* 縦は自動計算 */
+  object-fit: cover;    /* 中央を残してトリミング */
+  border-radius: 8px;   /* 角丸（任意） */
+}
+/* 記事本文内の cover 画像 */
+.single .post-cover img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.post-content img {
+  max-width: 400px;   /* 横幅の上限 */
+  width: 100%;        /* 画面サイズが400px以下なら縮小 */
+  height: auto;       /* 縦横比を維持 */
+  display: block;     /* インライン要素の隙間をなくす */
+  margin: 1.5rem auto;/* 中央寄せ＆上下余白 */
+}
