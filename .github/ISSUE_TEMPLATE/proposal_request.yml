@@ -1,0 +1,31 @@
+name: 機能提案
+description: 新機能や改善提案を行うためのテンプレート
+title: "[Proposal] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        あくまでテンプレートなので必ずしもすべての項目を埋めなくてよいです。
+  - type: textarea
+    id: summary
+    attributes:
+      label: 概要
+      placeholder: 概要を簡潔に記入してください
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 目的
+      placeholder: なぜこの提案が必要か、背景も含めて記述してください
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案内容
+      placeholder: どのような機能や改善を提案しますか？
+  - type: textarea
+    id: tasks
+    attributes:
+      label: タスク
+      placeholder: |
+        - [ ] 細かいタスクに分解できていれば記入してください
+        - [ ] 例：API設計、画面作成、テスト
