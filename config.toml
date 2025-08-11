@@ -2,9 +2,12 @@ baseURL = "https://zipishi.com/"
 languageCode = "ja"
 title = "ぢぴ氏の育児奮闘記"
 theme = "PaperMod"
+enableGitInfo = true
 
 [params]
   defaultTheme = "auto"             # ダーク・ライト自動切替
+  ShowPostMeta = true               # メタ情報（日付・著者など）を表示
+  ShowLastMod = true                # 最終更新日も表示
   ShowShareButtons = true           # SNS共有ボタン
   ShowReadingTime = true            # 読了時間を表示
   ShowCodeCopyButtons = true        # コードのコピーアイコン
@@ -12,8 +15,8 @@ theme = "PaperMod"
   ShowBreadCrumbs = true            # パンくずリスト
   ShowToc = true                    # 記事内目次
   tocOpen = true                    # デフォルトで目次を展開
-  ShowImageInList = true         # ← 記事一覧に画像を表示
-  ShowImageInSingle = true       # ← 記事ページにも表示
+  ShowImageInList = true            # 記事一覧に画像を表示
+  ShowImageInSingle = true          # 記事ページにも表示
 
 [params.homeInfoParams]
   Title = "ぢぴ氏"
@@ -76,3 +79,7 @@ theme = "PaperMod"
 
 [outputs]
     home = ["HTML", "RSS", "JSON"]
+
+[frontmatter]
+  date = [":git", "date"]
+  lastmod = ["lastmod", ":git", "date"]
