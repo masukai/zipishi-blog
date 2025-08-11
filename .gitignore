@@ -1,1 +1,17 @@
+# --- Hugo build output ---
+/public/
+
+# --- Hugo cache ---
+/resources/_gen/
+/hugo_stats.json
+
+# --- OS / Editor junk files ---
 .DS_Store
+Thumbs.db
+
+# --- Node.js dependencies (if using npm for themes or tooling) ---
+node_modules/
+
+# --- Local environment files ---
+.env
+.env.*
