@@ -81,5 +81,5 @@ enableGitInfo = true
     home = ["HTML", "RSS", "JSON"]
 
 [frontmatter]
-  date = [":git", "date"]
+  date = ["date", ":git"]
   lastmod = ["lastmod", ":git", "date"]
