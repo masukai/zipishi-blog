@@ -1,0 +1,9 @@
+{{- $u := .Destination | safeURL -}}
+<a href="{{ $u }}"
+  {{- if or (strings.HasPrefix $u "http://") (strings.HasPrefix $u "https://") -}}
+    {{- if not (in $u .Page.Site.BaseURL) -}} target="_blank" rel="noopener"{{ end -}}
+  {{- end -}}
+  {{- with .Title }} title="{{ . }}"{{ end -}}
+  {{- with .Attributes }} {{ . }}{{ end -}}>
+  {{- .Text | safeHTML -}}
+</a>

@@ -1,0 +1,27 @@
+{{/* 日付と更新日を表示するカスタム post_meta.html */}}
+
+{{- $date := .Date -}}
+{{- $last := .Lastmod -}}
+
+<span class="post-date">
+  公開日: {{ $date.Format "2006年1月2日" }}
+</span>
+
+{{- if site.Params.ShowLastMod -}}
+  {{- /* 日付が同じでも常に表示する */ -}}
+  <span class="post-lastmod">
+    ・最終更新日: {{ $last.Format "2006年1月2日" }}
+  </span>
+{{- end -}}
+
+{{- if site.Params.ShowReadingTime -}}
+  <span class="post-readtime">
+    ・読了時間: 約{{ .ReadingTime }}分
+  </span>
+{{- end -}}
+
+{{- with .Params.Author -}}
+  <span class="post-author">
+    ・著者: {{ . }}
+  </span>
+{{- end -}}
