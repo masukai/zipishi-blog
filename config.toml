@@ -18,6 +18,10 @@ enableGitInfo = true
   ShowImageInList = true            # 記事一覧に画像を表示
   ShowImageInSingle = true          # 記事ページにも表示
 
+[[params.socialIcons]]
+  name = "instagram"
+  url  = "https://instagram.com/zipishi_/"
+
 [params.homeInfoParams]
   Title = "ぢぴ氏"
   Content = """
@@ -25,10 +29,7 @@ enableGitInfo = true
 
   第一子、ちゃ太郎との日常のあれこれを綴ります
 
-  
   ![プロフィール画像](/images/zipishi-chataro.png)
-
-  [Instagram](https://instagram.com/zipishi_/)
   """
 
 [params.assets]
