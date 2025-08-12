@@ -152,28 +152,6 @@ a.tag:focus-visible,
   text-align: center;
 }
 
-.custom-share-buttons {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.custom-share-buttons a.share-icon {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.custom-share-buttons a.share-icon:hover {
-  background-color: #eee;
-}
-
 /* 記事一覧（トップページなど）の cover 画像 */
 .post-entry .entry-cover img {
   aspect-ratio: 16 / 9; /* 縦横比を固定 */
