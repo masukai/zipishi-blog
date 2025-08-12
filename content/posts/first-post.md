@@ -7,6 +7,7 @@ cover:
   relative: false
   hiddenInSingle: true
 date: 2025-08-09T21:30:00+09:00
+lastmod: 2025-08-09T21:30:00+09:00
 tags: ["育児", "0歳"]
 categories: ["日記"]
 Author: "ぢぴ氏"
