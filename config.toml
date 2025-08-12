@@ -14,7 +14,6 @@ enableGitInfo = true
   ShowPostNavLinks = true           # 次/前の記事リンク
   ShowBreadCrumbs = true            # パンくずリスト
   ShowToc = true                    # 記事内目次
-  tocOpen = true                    # デフォルトで目次を展開
   ShowImageInList = true            # 記事一覧に画像を表示
   ShowImageInSingle = true          # 記事ページにも表示
 
@@ -64,13 +63,13 @@ enableGitInfo = true
     weight = 50
 
   [[menu.main]]
-    name = "プライバシーポリシー"
-    url = "/privacy/"
+    name = "お問い合わせ"
+    url = "/contact/"
     weight = 60
 
   [[menu.main]]
-    name = "お問い合わせ"
-    url = "/contact/"
+    name = "ポリシー"
+    url = "/privacy/"
     weight = 70
 
 [markup]
