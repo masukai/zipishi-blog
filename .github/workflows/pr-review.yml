@@ -111,6 +111,7 @@ jobs:
           OTLP_GOOGLE_CLOUD_PROJECT: ${{ secrets.OTLP_GOOGLE_CLOUD_PROJECT }}
           settings_json: |
             {
+              "model": "gemini-2.5-flash",
               "coreTools": [
                 "run_shell_command(echo)",
                 "run_shell_command(gh pr view)",
@@ -147,8 +148,8 @@ jobs:
             一般的な指示の例: 「セキュリティに焦点を当てる」「パフォーマンスをチェックする」「エラーハンドリングをレビューする」「破壊的変更を確認する」
 
             情報が揃ったら、以下の手順で包括的なコードレビューを提供してください。
-            1. レビューをファイルに書き込む: write_file("/github/workspace/review.md", "<ここに詳細なレビューフィードバックを記述>")
-            2. レビューを投稿する: gh pr comment $PR_NUMBER --body-file /github/workspace/review.md --repo $REPOSITORY
+            1. レビューをファイルに書き込む: write_file("$GITHUB_WORKSPACE/review.md", "<ここに詳細なレビューフィードバックを記述>")
+            2. レビューを投稿する: gh pr comment $PR_NUMBER --body-file "$GITHUB_WORKSPACE/review.md" --repo $REPOSITORY
 
             レビューの観点(ブログの内容更新(contentフォルダ内のmdファイル関連)の場合):
             - **コンテンツの一貫性**: 記事内の情報が矛盾していないか、整合性が取れているかを確認する
@@ -158,7 +159,7 @@ jobs:
             - **文法とスタイル**: 記事の文法、スペル、スタイルが一貫しているかを確認する
             - **その他**: 読みやすさや面白さ、感想も記載する
 
-            レビューの観点(コードの変更の場合):
+            レビューの観点(コードの変更や機能追加の場合):
             - **セキュリティ**: 認証、認可、入力検証、データの無害化
             - **パフォーマンス**: アルゴリズム、データベースクエリ、キャッシング、リソース使用量
             - **信頼性**: エラーハンドリング、ログ記録、テストカバレッジ、エッジケース
