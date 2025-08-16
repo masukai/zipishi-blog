@@ -56,7 +56,6 @@ jobs:
       - name: Checkout PR code
         uses: actions/checkout@v4
         with:
-          # GitHub Appトークンが存在する場合はそれを使用し、なければsecrets.GITHUB_TOKENを使用する
           token: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
@@ -64,7 +63,6 @@ jobs:
         id: get_pr
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         env:
-          # ここでenvにGITHUB_TOKENを確実に設定する
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -73,10 +71,8 @@ jobs:
             PR_NUMBER=${{ github.event.pull_request.number }}
           fi
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          # Get PR details
           PR_DATA=$(gh pr view $PR_NUMBER --json title,body,additions,deletions,changedFiles,baseRefName,headRefName)
           echo "pr_data=$PR_DATA" >> "$GITHUB_OUTPUT"
-          # Get file changes
           CHANGED_FILES=$(gh pr diff $PR_NUMBER --name-only)
           echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
           echo "$CHANGED_FILES" >> "$GITHUB_OUTPUT"
@@ -86,19 +82,15 @@ jobs:
         id: get_pr_comment
         if: github.event_name == 'issue_comment'
         env:
-          # ここでenvにGITHUB_TOKENを確実に設定する
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           PR_NUMBER=${{ github.event.issue.number }}
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          # Extract additional instructions from comment
           ADDITIONAL_INSTRUCTIONS=$(echo "$COMMENT_BODY" | sed 's/.*@gemini-cli \/review//' | xargs)
           echo "additional_instructions=$ADDITIONAL_INSTRUCTIONS" >> "$GITHUB_OUTPUT"
-          # Get PR details
           PR_DATA=$(gh pr view $PR_NUMBER --json title,body,additions,deletions,changedFiles,baseRefName,headRefName)
           echo "pr_data=$PR_DATA" >> "$GITHUB_OUTPUT"
-          # Get file changes
           CHANGED_FILES=$(gh pr diff $PR_NUMBER --name-only)
           echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
           echo "$CHANGED_FILES" >> "$GITHUB_OUTPUT"
@@ -107,7 +99,6 @@ jobs:
       - name: Run Gemini PR Review
         uses: google-gemini/gemini-cli-action@main
         env:
-          # ここでenvにGITHUB_TOKENを確実に設定する
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.get_pr.outputs.pr_number || steps.get_pr_comment.outputs.pr_number }}
           PR_DATA: ${{ steps.get_pr.outputs.pr_data || steps.get_pr_comment.outputs.pr_data }}
@@ -132,8 +123,8 @@ jobs:
                 "write_file"
               ],
               "telemetry": {
-                "enabled": true,
-                "target": "gcp"
+                "enabled": false,
+                "target": "none"
               },
               "sandbox": false
             }
@@ -156,8 +147,8 @@ jobs:
             一般的な指示の例: 「セキュリティに焦点を当てる」「パフォーマンスをチェックする」「エラーハンドリングをレビューする」「破壊的変更を確認する」
 
             情報が揃ったら、以下の手順で包括的なコードレビューを提供してください。
-            1. レビューをファイルに書き込む: write_file("review.md", "<ここに詳細なレビューフィードバックを記述>")
-            2. レビューを投稿する: gh pr comment $PR_NUMBER --body-file review.md --repo $REPOSITORY
+            1. レビューをファイルに書き込む: write_file("/github/workspace/review.md", "<ここに詳細なレビューフィードバックを記述>")
+            2. レビューを投稿する: gh pr comment $PR_NUMBER --body-file /github/workspace/review.md --repo $REPOSITORY
 
             レビューの観点(ブログの内容更新(contentフォルダ内のmdファイル関連)の場合):
             - **コンテンツの一貫性**: 記事内の情報が矛盾していないか、整合性が取れているかを確認する
