@@ -1,11 +1,27 @@
+# GitHub Actions PR Review Workflow
+
+# このワークフローは、以下のいずれかのイベントでトリガーされます。
+# 1. プルリクエストが作成、更新、またはレビュー可能な状態になったとき
+# 2. プルリクエストのコメントに「@gemini_cli review」というキーワードが含まれているとき
+#
+# PRのコメントで手動で実行する場合の使い方は以下の通りです。
+# 1. レビューしてほしいプルリクエストを開く。
+# 2. コメント欄に「@gemini_cli review」と入力してコメントを投稿する。
+# 3. ワークフローが起動し、GeminiがPRをレビューしてくれます。
+# 4. レビュー結果は、PRへの新しいコメントとして追加されます。
 name: Gemini PR Review
 
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
 
 jobs:
   review:
+    # issue_commentイベントの場合、コメント本文に「@gemini_cli review」が含まれている場合のみ実行
+    # また、pull_requestイベントの場合も実行
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@gemini_cli review'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,6 +39,8 @@ jobs:
         with:
           api-key: ${{ secrets.GEMINI_API_KEY }}
           command: review-pull-request
+          # pull_requestイベントとissue_commentイベントの両方に対応するため、PR番号を動的に指定
+          pull-request-number: ${{ github.event.issue.number || github.event.pull_request.number }}
           prompt: |
             # 日本語でレビューを依頼
             このプルリクエストのコード変更について、以下の観点で日本語でレビューしてください。
@@ -44,12 +62,12 @@ jobs:
       - name: Post error message on PR
         if: steps.gemini-review.outcome == 'failure'
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
           ERROR_MESSAGE: "Gemini PRレビューに失敗しました。考えられる原因：\n\n- **APIの無料枠を超過しました。** 1日のリクエスト数制限に達した可能性があります。\n- 一時的なAPIの障害。\n\n時間をおいて再度試すか、手動でレビューをお願いします。"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # gh CLIツールを使用してPRにコメントを投稿
-          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+          if [[ -z "${{ env.PR_NUMBER }}" ]]; then
             echo "Pull request number not found. Skipping comment."
           else
             gh pr comment $PR_NUMBER --body "$ERROR_MESSAGE"
