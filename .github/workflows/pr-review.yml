@@ -37,9 +37,9 @@ jobs:
 
       - name: Gemini CLI PR Review
         id: gemini-review
-        uses: google-github-actions/run-gemini-cli@v1
+        uses: google-github-actions/run-gemini-cli@v0
         with:
-          api-key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           command: review-pull-request
           # pull_requestイベントとissue_commentイベントの両方に対応するため、PR番号を動的に指定
           pull-request-number: ${{ github.event.issue.number || github.event.pull_request.number }}
