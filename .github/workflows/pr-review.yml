@@ -46,6 +46,7 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           ERROR_MESSAGE: "Gemini PRレビューに失敗しました。考えられる原因：\n\n- **APIの無料枠を超過しました。** 1日のリクエスト数制限に達した可能性があります。\n- 一時的なAPIの障害。\n\n時間をおいて再度試すか、手動でレビューをお願いします。"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # gh CLIツールを使用してPRにコメントを投稿
           if [[ -z "${{ github.event.pull_request.number }}" ]]; then
@@ -53,5 +54,3 @@ jobs:
           else
             gh pr comment $PR_NUMBER --body "$ERROR_MESSAGE"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
