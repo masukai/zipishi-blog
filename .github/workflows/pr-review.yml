@@ -1,0 +1,210 @@
+name: 🧐 Gemini Pull Request Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: true
+        type: number
+
+jobs:
+  review-pr:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review')) ||
+      (github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, '@gemini-cli /review') &&
+        (github.event.comment.author_association == 'OWNER' ||
+         github.event.comment.author_association == 'MEMBER' ||
+         github.event.comment.author_association == 'COLLABORATOR')) ||
+      (github.event_name == 'pull_request_review_comment' &&
+        contains(github.event.comment.body, '@gemini-cli /review') &&
+        (github.event.comment.author_association == 'OWNER' ||
+         github.event.comment.author_association == 'MEMBER' ||
+         github.event.comment.author_association == 'COLLABORATOR')) ||
+      (github.event_name == 'pull_request_review' &&
+        contains(github.event.review.body, '@gemini-cli /review') &&
+        (github.event.review.author_association == 'OWNER' ||
+         github.event.review.author_association == 'MEMBER' ||
+         github.event.review.author_association == 'COLLABORATOR'))
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Generate GitHub App Token
+        id: generate_token
+        if: ${{ vars.APP_ID }}
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get PR details (pull_request & workflow_dispatch)
+        id: get_pr
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PR_NUMBER=${{ github.event.inputs.pr_number }}
+          else
+            PR_NUMBER=${{ github.event.pull_request.number }}
+          fi
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          PR_DATA=$(gh pr view $PR_NUMBER --json title,body,additions,deletions,changedFiles,baseRefName,headRefName)
+          echo "pr_data=$PR_DATA" >> "$GITHUB_OUTPUT"
+          CHANGED_FILES=$(gh pr diff $PR_NUMBER --name-only)
+          echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED_FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Get PR details (issue_comment)
+        id: get_pr_comment
+        if: github.event_name == 'issue_comment'
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          ADDITIONAL_INSTRUCTIONS=$(echo "$COMMENT_BODY" | sed 's/.*@gemini-cli \/review//' | xargs)
+          echo "additional_instructions=$ADDITIONAL_INSTRUCTIONS" >> "$GITHUB_OUTPUT"
+          PR_DATA=$(gh pr view $PR_NUMBER --json title,body,additions,deletions,changedFiles,baseRefName,headRefName)
+          echo "pr_data=$PR_DATA" >> "$GITHUB_OUTPUT"
+          CHANGED_FILES=$(gh pr diff $PR_NUMBER --name-only)
+          echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED_FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Run Gemini PR Review
+        uses: google-gemini/gemini-cli-action@main
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.get_pr.outputs.pr_number || steps.get_pr_comment.outputs.pr_number }}
+          PR_DATA: ${{ steps.get_pr.outputs.pr_data || steps.get_pr_comment.outputs.pr_data }}
+          CHANGED_FILES: ${{ steps.get_pr.outputs.changed_files || steps.get_pr_comment.outputs.changed_files }}
+          ADDITIONAL_INSTRUCTIONS: ${{ steps.get_pr.outputs.additional_instructions || steps.get_pr_comment.outputs.additional_instructions }}
+          REPOSITORY: ${{ github.repository }}
+        with:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OTLP_GCP_WIF_PROVIDER: ${{ secrets.OTLP_GCP_WIF_PROVIDER }}
+          OTLP_GOOGLE_CLOUD_PROJECT: ${{ secrets.OTLP_GOOGLE_CLOUD_PROJECT }}
+          settings_json: |
+            {
+              "model": "gemini-2.5-flash",
+              "coreTools": [
+                "run_shell_command(echo)",
+                "run_shell_command(gh pr view)",
+                "run_shell_command(gh pr diff)",
+                "run_shell_command(gh pr comment)",
+                "run_shell_command(cat)",
+                "run_shell_command(head)",
+                "run_shell_command(tail)",
+                "run_shell_command(grep)",
+                "write_file"
+              ],
+              "telemetry": {
+                "enabled": false,
+                "target": "none"
+              },
+              "sandbox": false
+            }
+          prompt: |
+            日本語でレビューを依頼します。語尾は「なのだよ」調で統一してください。
+            あなたは優秀なコードレビュアーです。PR情報を収集し、レビューを行うためのシェルコマンドにアクセスできます。
+
+            重要: 利用可能なシェルコマンドを使用して情報を収集してください。情報の提供を要求してはいけません。
+
+            まず、必要なデータを収集するためにこれらのコマンドを実行してください。
+            1. 実行: echo "$PR_DATA" でPRの詳細（JSON形式）を取得
+            2. 実行: echo "$CHANGED_FILES" で変更されたファイルの一覧を取得
+            3. 実行: echo "$PR_NUMBER" でPR番号を取得
+            4. 実行: echo "$ADDITIONAL_INSTRUCTIONS" でユーザーからの特定のレビュー指示を確認
+            5. 実行: gh pr diff $PR_NUMBER で完全な差分を確認
+            6. 特定のファイルについては、cat filename、head -50 filename、またはtail -50 filename を使用してください
+
+            追加のレビュー指示:
+            もし ADDITIONAL_INSTRUCTIONS にテキストが含まれている場合、レビューにおいてそれらの特定の分野や焦点を優先してください。
+            一般的な指示の例: 「セキュリティに焦点を当てる」「パフォーマンスをチェックする」「エラーハンドリングをレビューする」「破壊的変更を確認する」
+
+            情報が揃ったら、以下の手順で包括的なコードレビューを提供してください。
+            1. レビューをファイルに書き込む: write_file("$GITHUB_WORKSPACE/review.md", "<ここに詳細なレビューフィードバックを記述>")
+            2. レビューを投稿する: gh pr comment $PR_NUMBER --body-file "$GITHUB_WORKSPACE/review.md" --repo $REPOSITORY
+
+            レビューの観点(ブログの内容更新(contentフォルダ内のmdファイル関連)の場合):
+            - **コンテンツの一貫性**: 記事内の情報が矛盾していないか、整合性が取れているかを確認する
+            - **SEO対策**: 適切なキーワードが使用されているか、メタデータが設定されているかを確認する
+            - **ユーザビリティ**: 読者が情報を簡単に見つけられるか、ナビゲーションが適切かを確認する
+            - **アクセシビリティ**: すべてのユーザーがコンテンツにアクセスできるか、特に障害を持つユーザーへの配慮がなされているかを確認する
+            - **文法とスタイル**: 記事の文法、スペル、スタイルが一貫しているかを確認する
+            - **その他**: 読みやすさや面白さ、感想も記載する
+
+            レビューの観点(コードの変更や機能追加の場合):
+            - **セキュリティ**: 認証、認可、入力検証、データの無害化
+            - **パフォーマンス**: アルゴリズム、データベースクエリ、キャッシング、リソース使用量
+            - **信頼性**: エラーハンドリング、ログ記録、テストカバレッジ、エッジケース
+            - **保守性**: コード構造、ドキュメント、命名規則
+            - **機能性**: ロジックの正確性、要件の充足
+
+            出力フォーマット:
+            レビューは以下の厳密なMarkdownフォーマットで構成してください。
+
+            ## 📋 レビューの要約
+            PRの簡単な概要と全体的な評価を2〜3文で提供してください。
+
+            ## 🔍 全体的なフィードバック
+            - コードの品質に関する一般的な所見を箇条書きで記述
+            - 全体的なパターンやアーキテクチャ上の決定について言及
+            - 実装の良い点を強調
+            - ファイル全体にわたる繰り返しのテーマを記述
+
+            ## 🎯 個別のフィードバック
+            実際に問題があるセクションのみを含めてください。優先度カテゴリに問題がない場合は、そのセクション全体を省略してください。
+
+            ### 🔴 致命的
+            (致命的な問題がある場合のみ含める)
+            マージする前に必ず対処しなければならない問題（セキュリティの脆弱性、破壊的変更、主要なバグ）:
+            - **ファイル: `ファイル名:行番号`** - 致命的な問題の説明と具体的な改善提案
+
+            ### 🟡 高
+            (高優先度の問題がある場合のみ含める)
+            対処すべき重要な問題（パフォーマンスの問題、設計上の欠陥、重要なバグ）:
+            - **ファイル: `ファイル名:行番号`** - 高優先度の問題の説明と提案された修正案
+
+            ### 🟢 中
+            (中優先度の問題がある場合のみ含める)
+            コードの品質を向上させるための改善点（スタイル上の問題、軽微な最適化、より良いプラクティス）:
+            - **ファイル: `ファイル名:行番号`** - 中優先度の改善点の説明
+
+            ### 🔵 低
+            (提案がある場合のみ含める)
+            あると良い改善点や提案（ドキュメント、命名、軽微なリファクタリング）:
+            - **ファイル: `ファイル名:行番号`** - 提案や機能強化の説明
+
+            **注**: いずれのカテゴリにも特定の問題が見つからない場合は、シンプルに「このレビューでは特定の問題は見つかりませんでした。」と記述してください。
+
+            ## ✅ ハイライト
+            (良い点を強調する場合のみ含める)
+            - 特定の良いプラクティスや実装に言及
+            - よく書かれたコードセクションを評価
+            - 以前のバージョンからの改善点を記述
