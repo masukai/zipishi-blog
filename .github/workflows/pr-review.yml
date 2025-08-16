@@ -56,6 +56,7 @@ jobs:
       - name: Checkout PR code
         uses: actions/checkout@v4
         with:
+          # GitHub Appトークンが存在する場合はそれを使用し、なければsecrets.GITHUB_TOKENを使用する
           token: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
@@ -63,7 +64,8 @@ jobs:
         id: get_pr
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          # ここでenvにGITHUB_TOKENを確実に設定する
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PR_NUMBER=${{ github.event.inputs.pr_number }}
@@ -84,7 +86,8 @@ jobs:
         id: get_pr_comment
         if: github.event_name == 'issue_comment'
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          # ここでenvにGITHUB_TOKENを確実に設定する
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           PR_NUMBER=${{ github.event.issue.number }}
@@ -104,7 +107,8 @@ jobs:
       - name: Run Gemini PR Review
         uses: google-gemini/gemini-cli-action@main
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          # ここでenvにGITHUB_TOKENを確実に設定する
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.get_pr.outputs.pr_number || steps.get_pr_comment.outputs.pr_number }}
           PR_DATA: ${{ steps.get_pr.outputs.pr_data || steps.get_pr_comment.outputs.pr_data }}
           CHANGED_FILES: ${{ steps.get_pr.outputs.changed_files || steps.get_pr_comment.outputs.changed_files }}
@@ -163,7 +167,7 @@ jobs:
             - **文法とスタイル**: 記事の文法、スペル、スタイルが一貫しているかを確認する
             - **その他**: 読みやすさや面白さ、感想も記載する
 
-            レビューの観点:
+            レビューの観点(コードの変更の場合):
             - **セキュリティ**: 認証、認可、入力検証、データの無害化
             - **パフォーマンス**: アルゴリズム、データベースクエリ、キャッシング、リソース使用量
             - **信頼性**: エラーハンドリング、ログ記録、テストカバレッジ、エッジケース
