@@ -1,0 +1,57 @@
+name: Gemini PR Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gemini CLI PR Review
+        id: gemini-review
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          api-key: ${{ secrets.GEMINI_API_KEY }}
+          command: review-pull-request
+          prompt: |
+            # 日本語でレビューを依頼
+            このプルリクエストのコード変更について、以下の観点で日本語でレビューしてください。
+            指摘事項は箇条書きで、具体的な改善提案を含めてください。
+            語尾は「なのだよ」調で統一してください。
+            ## ブログの内容更新(contentフォルダ内のmdファイル関連)の場合は以下の観点で
+            - 内容、意図の理解
+            - 文章の読みやすさ、面白さ、感想
+            ## コードの変更の場合は以下の観点で
+            - 内容、意図の理解
+            - 実装の妥当性
+            - 設計の適切性
+            - バグの可能性
+            - パフォーマンスの改善点
+            - コードの可読性
+            - ベストプラクティスからの逸脱
+        continue-on-error: true # ここが重要！エラーが発生してもワークフローを続行
+
+      - name: Post error message on PR
+        if: steps.gemini-review.outcome == 'failure'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ERROR_MESSAGE: "Gemini PRレビューに失敗しました。考えられる原因：\n\n- **APIの無料枠を超過しました。** 1日のリクエスト数制限に達した可能性があります。\n- 一時的なAPIの障害。\n\n時間をおいて再度試すか、手動でレビューをお願いします。"
+        run: |
+          # gh CLIツールを使用してPRにコメントを投稿
+          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+            echo "Pull request number not found. Skipping comment."
+          else
+            gh pr comment $PR_NUMBER --body "$ERROR_MESSAGE"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
