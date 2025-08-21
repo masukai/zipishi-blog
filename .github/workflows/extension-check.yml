@@ -1,0 +1,46 @@
+name: Extension and Naming Policy Check
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  check-naming:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check file extensions
+        run: |
+          errors=0
+
+          echo "🔍 Checking for uppercase extensions..."
+          if git ls-files | grep -E '\.[^./]*[A-Z][^/]*$'; then
+            echo "❌ Uppercase extensions found. Please rename to lowercase."
+            echo "❌ 大文字の拡張子が見つかりました。すべて小文字にリネームしてください。"
+            errors=1
+          fi
+
+          echo "🔍 Checking for .jpeg files..."
+          if git ls-files | grep -E '\.jpeg$'; then
+            echo "❌ .jpeg found. Please use .jpg."
+            echo "❌ .jpeg が見つかりました。.jpg を使用してください。"
+            errors=1
+          fi
+
+          echo "🔍 Checking for .yaml files..."
+          if git ls-files | grep -E '\.yaml$'; then
+            echo "❌ .yaml found. Please use .yml."
+            echo "❌ .yaml が見つかりました。.yml を使用してください。"
+            errors=1
+          fi
+
+          if [ $errors -ne 0 ]; then
+            echo "🚫 Policy violations detected. Please fix before merging."
+            echo "🚫 ポリシー違反が検出されました。修正してからマージしてください。"
+            exit 1
+          fi
+
+          echo "✅ All checks passed!"
+          echo "✅ すべてのチェックを通過しました！"
