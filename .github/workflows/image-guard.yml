@@ -1,0 +1,154 @@
+name: Image Size Check and Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.webp"
+      - "**/*.gif"
+      - "**/*.svg"
+      - "**/*.JPG"
+      - "**/*.JPEG"
+      - "**/*.PNG"
+      - "**/*.WEBP"
+      - "**/*.GIF"
+      - "**/*.SVG"
+  push:
+    branches: [ main, develop ]
+    paths:
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.webp"
+      - "**/*.gif"
+      - "**/*.svg"
+      - "**/*.JPG"
+      - "**/*.JPEG"
+      - "**/*.PNG"
+      - "**/*.WEBP"
+      - "**/*.GIF"
+      - "**/*.SVG"
+
+jobs:
+  check-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: 変更ファイル一覧を取得
+        id: diff
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+
+      - name: Python をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Pillow をインストール（寸法取得用）
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow
+
+      - name: 画像チェック（25MB超・ピクセル寸法）
+        id: check
+        run: |
+          python << 'PY'
+          import os, sys, pathlib, json
+          from PIL import Image
+
+          LIMIT_MB = 25
+          LIMIT_BYTES = LIMIT_MB * 1024 * 1024
+          # 必要に応じて寸法の上限/下限を調整
+          MAX_W, MAX_H = 8000, 8000   # 例: 8K相当を上限
+          WARN_W, WARN_H = 4000, 4000 # 例: ブログ用途の警告ライン
+
+          exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+          changed = [p.strip() for p in open("changed_files.txt") if p.strip()]
+          targets = [p for p in changed if pathlib.Path(p).suffix.lower() in exts and os.path.isfile(p)]
+
+          failures = []
+          warnings = []
+
+          def human(n):
+            # 人間に読みやすいサイズ
+            for unit in ["B","KB","MB","GB"]:
+              if n < 1024.0:
+                return f"{n:.1f}{unit}"
+              n /= 1024.0
+            return f"{n:.1f}TB"
+
+          for f in targets:
+            size = os.path.getsize(f)
+            # サイズチェック
+            if size > LIMIT_BYTES:
+              failures.append(f"❌ {f} → {human(size)}（25MB超）")
+            else:
+              # 25MB以内でも大きい場合は警告例（任意）
+              if size > 10 * 1024 * 1024:
+                warnings.append(f"⚠️ {f} → {human(size)}（10MB超。圧縮/縮小を検討）")
+
+            # 寸法チェック（SVG はスキップ）
+            suffix = pathlib.Path(f).suffix.lower()
+            if suffix != ".svg":
+              try:
+                with Image.open(f) as im:
+                  w, h = im.size
+                if w > MAX_W or h > MAX_H:
+                  failures.append(f"❌ {f} → {w}x{h}px（上限 {MAX_W}x{MAX_H}px 超）")
+                elif w > WARN_W or h > WARN_H:
+                  warnings.append(f"⚠️ {f} → {w}x{h}px（大きめ。ブログ用途なら縮小推奨）")
+              except Exception as e:
+                warnings.append(f"⚠️ {f} → 寸法取得に失敗（{e}）")
+
+          # レポート出力
+          report_lines = []
+          if failures:
+            report_lines.append("## 画像チェック結果\n")
+            report_lines.append("**失敗（CI を落とします）**\n")
+            report_lines.extend([f"- {x}" for x in failures])
+            report_lines.append("")
+          if warnings:
+            report_lines.append("**警告**\n")
+            report_lines.extend([f"- {x}" for x in warnings])
+            report_lines.append("")
+          if not (failures or warnings):
+            report_lines.append("✅ 画像の問題は見つかりませんでした。")
+
+          report = "\n".join(report_lines).strip()
+          print(report)
+
+          # GitHub Actions の出力として保存（PR コメント用に使える）
+          with open(os.environ.get("GITHUB_OUTPUT"), "a") as fh:
+            report_safe = report.replace("%","%%")  # パーセントはエスケープ
+            fh.write(f"report<<EOF\n{report_safe}\nEOF\n")
+
+          # 失敗があれば非ゼロ終了
+          if failures:
+            sys.exit(1)
+          PY
+
+      - name: PRに結果コメント
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const report = core.getInput('report', { required: false }) || process.env.REPORT || `${{ steps.check.outputs.report }}`;
+            const body = report && report.length ? report : "画像チェックを実行しました。";
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            })
+        env:
+          REPORT: ${{ steps.check.outputs.report }}
