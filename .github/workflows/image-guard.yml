@@ -1,0 +1,146 @@
+name: Image Size Check and Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.webp"
+      - "**/*.gif"
+      - "**/*.svg"
+      - "**/*.JPG"
+      - "**/*.JPEG"
+      - "**/*.PNG"
+      - "**/*.WEBP"
+      - "**/*.GIF"
+      - "**/*.SVG"
+  push:
+    branches: [ main, develop ]
+    paths:
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.webp"
+      - "**/*.gif"
+      - "**/*.svg"
+      - "**/*.JPG"
+      - "**/*.JPEG"
+      - "**/*.PNG"
+      - "**/*.WEBP"
+      - "**/*.GIF"
+      - "**/*.SVG"
+
+jobs:
+  check-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 差分ファイル取得（PR/push対応＋フォールバック）
+        id: diff
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "event_name=${{ github.event_name }}"
+          : > changed_files.txt
+
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch || 'main' }}"
+          AFTER="${{ github.sha }}"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # PR: baseブランチと現在のSHAを三点リーダで比較（マージベース考慮）
+            git fetch origin "${{ github.base_ref }}" --depth=1 || true
+            git diff --name-only --diff-filter=ACMR \
+              "origin/${{ github.base_ref }}"..."${AFTER}" > changed_files.txt || true
+
+          else
+            # push
+            BEFORE="${{ github.event.before }}"
+            is_empty_before=false
+            if [[ -z "${BEFORE}" || "${BEFORE}" =~ ^0+$ ]]; then
+              is_empty_before=true
+            fi
+
+            if [[ "${is_empty_before}" == "false" ]]; then
+              git diff --name-only --diff-filter=ACMR "${BEFORE}" "${AFTER}" > changed_files.txt || true
+            else
+              # 新規ブランチ初回push等: defaultブランチのマージベースから差分
+              git fetch origin "${DEFAULT_BRANCH}" --depth=1 || true
+              if git rev-parse --verify "origin/${DEFAULT_BRANCH}" >/dev/null 2>&1; then
+                BASE="$(git merge-base "${AFTER}" "origin/${DEFAULT_BRANCH}")" || BASE=""
+              else
+                BASE=""
+              fi
+
+              if [[ -n "${BASE}" ]]; then
+                git diff --name-only --diff-filter=ACMR "${BASE}" "${AFTER}" > changed_files.txt || true
+              else
+                # それも無理なら最後のコミット変更ファイルだけ（最終フォールバック）
+                git diff-tree --no-commit-id --name-only -r "${AFTER}" > changed_files.txt || true
+              fi
+            fi
+          fi
+
+          echo "Changed files:"
+          cat changed_files.txt || true
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Pillow インストール
+        run: pip install pillow
+
+      - name: 画像チェック
+        run: |
+          python << 'PY'
+          import os, pathlib
+          from PIL import Image
+
+          LIMIT_MB = 25
+          LIMIT_BYTES = LIMIT_MB * 1024 * 1024
+          exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+
+          changed_path = "changed_files.txt"
+          changed = []
+          if os.path.exists(changed_path):
+              with open(changed_path) as f:
+                  changed = [p.strip() for p in f if p.strip()]
+
+          targets = [p for p in changed if pathlib.Path(p).suffix.lower() in exts and os.path.isfile(p)]
+
+          def human(n):
+              for unit in ["B","KB","MB","GB"]:
+                  if n < 1024.0:
+                      return f"{n:.1f}{unit}"
+                  n /= 1024.0
+              return f"{n:.1f}TB"
+
+          if not targets:
+              print("ℹ️ 画像の変更は検出されませんでした。")
+              raise SystemExit(0)
+
+          failures = []
+          for f in targets:
+              try:
+                  size = os.path.getsize(f)
+              except FileNotFoundError:
+                  # まれに rename 等で欠落することがあるためスキップ
+                  continue
+              if size > LIMIT_BYTES:
+                  failures.append(f"❌ {f} → {human(size)}（25MB超）")
+
+          if failures:
+              print("## 画像サイズチェック: 失敗")
+              for x in failures:
+                  print(x)
+              raise SystemExit(1)
+          else:
+              print("✅ 画像サイズチェック: 問題なし")
+          PY
