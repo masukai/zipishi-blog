@@ -204,8 +204,9 @@ GitHubに上がっているものが最新のものになるので、ローカ�
    ![プルリク8](docs/pull-request8.png)
 8. 追加でGemini CLIのコメントが欲しくなった場合は、コメントに`@gemini-cli /review`と入れましょう。以下のようにコメントをくれます。
    ![プルリク9](docs/pull-request9.png)
-
-
+9. 更新内容が確定したら、最後に緑色の「Merge pull request」のボタンをクリックし、「confirm merge」をクリックします。これで無事記事は公開されました！
+   ![プルリク10](docs/pull-request10.png)
+   ![プルリク11](docs/pull-request11.png)
 
 ## その他、必要なページの作成
 
