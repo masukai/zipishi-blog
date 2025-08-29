@@ -1,0 +1,36 @@
+{{/* age.html — 使い方: {{< age birth="2024-09-03" >}} */}}
+{{ $birthStr := .Get "birth" }}
+{{ if not $birthStr }}{{ errorf "age shortcode: birth (YYYY-MM-DD) is required" }}{{ end }}
+{{ $birth := time $birthStr }}
+{{ $now := now }}
+
+{{/* 年月日の数値を取り出す */}}
+{{ $yNow := int (dateFormat "2006" $now) }}
+{{ $mNow := int (dateFormat "1" $now) }}
+{{ $dNow := int (dateFormat "2" $now) }}
+{{ $yB := int (dateFormat "2006" $birth) }}
+{{ $mB := int (dateFormat "1" $birth) }}
+{{ $dB := int (dateFormat "2" $birth) }}
+
+{{/* 月差（ざっくり） */}}
+{{ $monthDiff := add (mul (sub $yNow $yB) 12) (sub $mNow $mB) }}
+
+{{/* 当月の「日」でまだ誕生日に達していなければ 1ヶ月引く */}}
+{{ if lt $dNow $dB }}
+  {{ $monthDiff = sub $monthDiff 1 }}
+{{ end }}
+
+{{ if lt $monthDiff 0 }}
+  {{/* 未来日が入った場合の保険 */}}
+  0ヶ月
+{{ else }}
+  {{ $years := div $monthDiff 12 }}
+  {{ $months := mod $monthDiff 12 }}
+
+  {{/* 0歳台かつ「生後◯ヶ月だけ」出したいならここで分岐してもOK */}}
+  {{ if gt $years 0 }}
+    {{ printf "%d歳%dヶ月" $years $months }}
+  {{ else }}
+    {{ printf "%dヶ月" $months }}
+  {{ end }}
+{{ end }}
