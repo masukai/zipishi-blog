@@ -1,0 +1,51 @@
+{{/* layouts/shortcodes/age.html
+--------------------------------------------------------------------------------
+使い方:
+  {{< age birth="YYYY-MM-DD" >}}
+例:
+  {{< age birth="2024-09-03" >}}
+
+パラメータ:
+  - birth (必須): 誕生日。形式は YYYY-MM-DD（ゼロ詰め）を推奨。
+
+出力:
+  - 例: "1歳1ヶ月"（1歳以上の場合）、"11ヶ月"（0歳の場合）
+
+挙動:
+  - 未来日が指定された場合は "0ヶ月" を返します。
+  - 月齢の計算はビルド時点のローカルタイムゾーンに依存します（CI等では TZ=Asia/Tokyo 推奨）。
+
+メモ:
+  - 将来のフォーマット混乱回避のため、dateFormat の月・日を 2桁指定に統一しています。
+-------------------------------------------------------------------------------- */}}
+
+{{ $birthStr := .Get "birth" }}
+{{ if not $birthStr }}{{ errorf "age shortcode: birth (YYYY-MM-DD) is required" }}{{ end }}
+
+{{ $birth := time $birthStr }}
+{{ $now := now }}
+
+{{/* 2桁で取得 → 先頭ゼロを剥がして int 化（"08" -> "8"） */}}
+{{ $yNow := int (dateFormat "2006" $now) }}
+{{ $mNow := int (replaceRE "^0+" "" (dateFormat "01" $now)) }}
+{{ $dNow := int (replaceRE "^0+" "" (dateFormat "02" $now)) }}
+
+{{ $yB   := int (dateFormat "2006" $birth) }}
+{{ $mB   := int (replaceRE "^0+" "" (dateFormat "01" $birth)) }}
+{{ $dB   := int (replaceRE "^0+" "" (dateFormat "02" $birth)) }}
+
+{{/* とりあえずの月差 */}}
+{{ $monthDiff := add (mul (sub $yNow $yB) 12) (sub $mNow $mB) }}
+
+{{/* 当月の誕生日がまだ来てなければ 1 ヶ月引く */}}
+{{ if lt $dNow $dB }}
+  {{ $monthDiff = sub $monthDiff 1 }}
+{{ end }}
+
+{{ if lt $monthDiff 0 }}
+  0ヶ月
+{{ else }}
+  {{ $years  := div $monthDiff 12 }}
+  {{ $months := mod $monthDiff 12 }}
+  {{ printf "%d歳%dヶ月" $years $months }}
+{{ end }}
