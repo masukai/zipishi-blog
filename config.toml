@@ -3,6 +3,7 @@ languageCode = "ja"
 title = "ぢぴ氏の育児奮闘記"
 theme = "PaperMod"
 enableGitInfo = true
+disqusShortname = "zipishi"
 
 [params]
   defaultTheme = "auto"             # ダーク・ライト自動切替
@@ -16,6 +17,7 @@ enableGitInfo = true
   ShowToc = true                    # 記事内目次
   ShowImageInList = true            # 記事一覧に画像を表示
   ShowImageInSingle = true          # 記事ページにも表示
+  comments = true
 
 [[params.socialIcons]]
   name = "instagram"
