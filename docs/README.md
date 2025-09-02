@@ -9,7 +9,7 @@
 
 ## 関連ドキュメント
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) - プロジェクト構造や運用の基本
+- [プロジェクト構造や運用の基本](CONTRIBUTING.md)
 - [ブログ更新方法](blog-posting.md)
 - [プルリクエストの作成と承認](pull-request.md)
 - [その他必要なページの作成](other-pages.md)
@@ -18,4 +18,4 @@
 
 ## 構成図
 
-![構成図](system-architect.drawio.png)
+![構成図](./image/system-architect.drawio.png)
