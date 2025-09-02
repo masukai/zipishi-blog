@@ -1,0 +1,8 @@
+{{- $src := .Destination | safeURL -}}
+{{- $alt := .Text | plainify -}}
+{{- if not $alt -}}
+  {{- $alt = path.Base $src -}}
+  {{- $ext := path.Ext $alt -}}
+  {{- $alt = strings.TrimSuffix $alt $ext -}}
+{{- end -}}
+<img src="{{ $src }}" alt="{{ $alt }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ with .Attributes }} {{ . }}{{ end }} />
