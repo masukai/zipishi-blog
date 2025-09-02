@@ -27,3 +27,4 @@ New repository secretをクリックし、名前を**GEMINI_API_KEY**、値に�
 
 - [実際のworkflows](../.github/workflows/pr-review.yml)
 - [参考にした公式ページ](https://github.com/google-gemini/gemini-cli-action/blob/main/examples/gemini-pr-review.yml)
+
