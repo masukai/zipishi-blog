@@ -12,7 +12,7 @@ draft: false
 ぢぴ氏の夫で、ちゃ太郎の父なのだよ
 (ぜひ、[プロフィール](/about/)を読んで欲しいのだよ)。
 
-![about](/images/posts/papashi-no-kogoto/about.png)
+![プロフィールページのスクリーンショット](/images/posts/papashi-no-kogoto/about.png)
 
 今日ブログを書いているのは、他でもない、
 このブログについてなのだよ。
@@ -22,23 +22,23 @@ draft: false
 ブログは初めてなので、どういう内容を書けばいいのか、  
 家族みんなで困ったものなのだよ。  
 そこで、「[お問い合わせ](/contact/)」ページがあるので、
-ぜひ使って欲しいのだよ！  
+ぜひ使って欲しいのだよ！
 件名は「質問」や「感想」で気軽によろしくなのだよ^ ^
 
-![contact](/images/posts/papashi-no-kogoto/contact.png)
+![お問い合わせページのスクリーンショット](/images/posts/papashi-no-kogoto/contact.png)
 
 また、[インスタグラムもやっている](https://www.instagram.com/zipishi_/)のだよ。  
 これからどんどん投稿する予定なのだよ。  
 基本はブログに書いてあることのダイジェストや紹介だけど、リール動画も簡単なものは発信できたらと思っているのだよ。
 
-![instagram](/images/posts/papashi-no-kogoto/instagram.png)
+![インスタグラムのスクリーンショット](/images/posts/papashi-no-kogoto/instagram.png)
 
 そのほか、ブログの技術担当もしているから、こんな機能欲しいとか**welcome**なのだよ(「できない」って言うかもなのだよ^ ^)。  
 いいね機能やコメント機能は少し考えているところなのだよ。
 
 時々(多分、ちょーたまに)、パパ氏も出てきてブログのことや、パパ氏目線の育児のことを書くつもりなのだよ。
 
-最後まで読んでくれてありがとう！  
+最後まで読んでくれてありがとう！
 また出てきたときは優しくしてね！なのだよ^ ^
 
-![family](/images/family.png)
+![ぢぴ氏ファミリーの写真](/images/family.png)
