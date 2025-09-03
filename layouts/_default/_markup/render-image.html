@@ -1,0 +1,20 @@
+{{/*
+  Override Hugo's default Markdown image renderer to ensure every image has
+  accessible alt text. When authors omit alt text, derive a fallback from the
+  image file name by stripping its final extension (e.g. "cat.png" -> "cat").
+  Filenames with multiple dots ("my.image.v2.png") are normalized by
+  replacing dots with hyphens (-> "my-image-v2").
+
+  HugoのデフォルトのMarkdown画像レンダラーを上書きし、すべての画像にalt属性が付くようにします。
+  作者がaltテキストを省略した場合、ファイル名の最後の拡張子を取り除いたものを代替テキストとして使用します（例: "cat.png" -> "cat"）。
+  複数のドットを含むファイル名（"my.image.v2.png"など）は中間部分をハイフンに置き換えて正規化します（-> "my-image-v2"）。
+*/}}
+{{- $src := .Destination | safeURL -}}
+{{- $alt := .Text | plainify -}}
+{{- if not $alt -}}
+  {{- $alt = path.Base $src -}}
+  {{- $ext := path.Ext $alt -}}
+  {{- $alt = strings.TrimSuffix $alt $ext -}}
+  {{- $alt = replace $alt "." "-" -}}
+{{- end -}}
+<img src="{{ $src }}" alt="{{ $alt }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ with .Attributes }} {{ . }}{{ end }} />
