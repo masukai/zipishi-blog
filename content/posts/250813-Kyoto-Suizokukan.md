@@ -53,27 +53,27 @@ draft: false
 
 京都水族館では、外来種から在来種まで、たくさんのオオサンショウウオを展示しているよ！
 
-こんなに大きなぬいぐるみも！！  
+こんなに大きなぬいぐるみも！！
 ちょうどぢぴ氏と同じくらいのサイズ感⭐︎
 
-![uo](/images/posts/250813-Kyoto-Suizokukan/uo.jpg)
+![オオサンショウウオの巨大ぬいぐるみ](/images/posts/250813-Kyoto-Suizokukan/uo.jpg)
 
 
 このぬいぐるみ、ぢぴ氏の家にも1匹いるんだけど、可愛いよね〜☺️
 
-オオサンショウウオの他にも、クラゲやエイ、ペンギンなど色々な生き物に会えるよ♪  
-ドラマで出てきそうな大水槽も✨✨  
+オオサンショウウオの他にも、クラゲやエイ、ペンギンなど色々な生き物に会えるよ♪
+ドラマで出てきそうな大水槽も✨✨
 綺麗だね〜〜😍
 
-![main](/images/posts/250813-Kyoto-Suizokukan/main.jpg)
+![京都水族館の大水槽](/images/posts/250813-Kyoto-Suizokukan/main.jpg)
 
 
 ちゃ太郎が興味を示していたのは、チンアナゴ！
 
-穴から出たり入ったりするチンアナゴをじっと見つめて指さしていたよ！  
+穴から出たり入ったりするチンアナゴをじっと見つめて指さしていたよ！
 可愛すぎる(//∇//)
 
-![anago](/images/posts/250813-Kyoto-Suizokukan/anago.jpg)
+![チンアナゴ](/images/posts/250813-Kyoto-Suizokukan/anago.jpg)
 
 
 お昼ご飯は館内にあるカフェで😄
@@ -95,7 +95,7 @@ draft: false
 
 意外と食べ応えがあって、お腹いっぱいになりました😫
 
-![lunch](/images/posts/250813-Kyoto-Suizokukan/lunch.jpg)
+![イルカおにぎりとアジフライのセット](/images/posts/250813-Kyoto-Suizokukan/lunch.jpg)
 
 
 お昼過ぎには、イルカのプールでイルカがお昼ご飯を食べる様子を見てきたよ！
@@ -107,9 +107,9 @@ draft: false
 
 でも大丈夫！ショーではなかったけど、トレーナーさんがイルカについて楽しいトークをしてくれて、最後には大きなジャンプも見れました🐬
 
-![iruka1](/images/posts/250813-Kyoto-Suizokukan/iruka1.jpg)
+![餌を食べるイルカ](/images/posts/250813-Kyoto-Suizokukan/iruka1.jpg)
 
-![iruka2](/images/posts/250813-Kyoto-Suizokukan/iruka2.jpg)
+![ジャンプするイルカ](/images/posts/250813-Kyoto-Suizokukan/iruka2.jpg)
 
 
 水族館での滞在時間はお昼ご飯の時間を含めて2時間半程度！
