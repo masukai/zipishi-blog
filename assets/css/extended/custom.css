@@ -178,6 +178,14 @@ a.tag:focus-visible,
   cursor: zoom-in;    /* クリックでズーム可能であることを示す */
 }
 
+/* ズーム時の背景色をテーマに合わせて調整 */
+.medium-zoom-overlay {
+  background: rgba(255, 255, 255, 0.8) !important; /* ライトモード */
+}
+.dark .medium-zoom-overlay {
+  background: rgba(0, 0, 0, 0.8) !important;       /* ダークモード */
+}
+
 .social-icons a svg {
   width: 40px;
   height: 40px;
