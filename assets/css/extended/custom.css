@@ -168,12 +168,14 @@ a.tag:focus-visible,
   object-fit: cover;
 }
 
+/* 記事本文内の画像設定（クリックで拡大対応） */
 .post-content img {
   max-width: 400px;   /* 横幅の上限 */
   width: 100%;        /* 画面サイズが400px以下なら縮小 */
   height: auto;       /* 縦横比を維持 */
   display: block;     /* インライン要素の隙間をなくす */
   margin: 1.5rem auto;/* 中央寄せ＆上下余白 */
+  cursor: zoom-in;    /* クリックでズーム可能であることを示す */
 }
 
 .social-icons a svg {
