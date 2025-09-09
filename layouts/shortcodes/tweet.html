@@ -1,9 +1,0 @@
-{{/* Tweet shortcode with optional user and theme */}}
-{{- $id := .Get "id" | default (.Get 0) -}}
-{{- $user := .Get "user" -}}
-{{- $theme := .Get "theme" -}}
-{{- $url := cond $user (printf "https://twitter.com/%s/status/%s" $user $id) (printf "https://twitter.com/i/web/status/%s" $id) -}}
-<blockquote class="twitter-tweet"{{ with $theme }} data-theme="{{ . }}"{{ end }}>
-  <a href="{{$url}}"></a>
-</blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

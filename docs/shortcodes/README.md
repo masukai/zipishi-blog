@@ -18,35 +18,6 @@ Hugo の標準ショートコードを利用すると、記事に X（旧 Twitte
 
 ID は投稿 URL `https://x.com/TwitterDev/status/1234567890123456789` の末尾にある数字部分です。追加の設定は不要です。
 
-### テーマの切り替え
-
-このサイトではページのライト／ダークテーマに合わせて X ウィジェットのテーマも自動で切り替わります。
-特定の投稿だけ固定したい場合は `theme` パラメータに `light` か `dark` を指定してください。
-
-```markdown
-{{< tweet 1234567890123456789 theme="dark" >}}
-```
-
-PaperMod テーマを利用している場合は、`layouts/partials/extend_body.html` に以下のスクリプトを配置することで、ページのテーマ切り替え時に埋め込みも再描画されます（`data-theme` を明示したものは上書きされません）。
-
-```html
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const applyTweetTheme = () => {
-    const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-    document.querySelectorAll('blockquote.twitter-tweet').forEach(el => {
-      if (!el.hasAttribute('data-theme')) {
-        el.dataset.theme = theme;
-      }
-    });
-    if (window.twttr?.widgets) window.twttr.widgets.load();
-  };
-  applyTweetTheme();
-  new MutationObserver(applyTweetTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-});
-</script>
-```
-
 ## Instagram の投稿を埋め込む
 
 投稿 ID（URL の `/p/` 以降の文字列）を指定して `instagram` ショートコードを使います。

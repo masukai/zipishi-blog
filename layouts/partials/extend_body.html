@@ -2,19 +2,3 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PVSRD6WX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const applyTweetTheme = () => {
-    const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-    document.querySelectorAll('blockquote.twitter-tweet').forEach(el => {
-      if (!el.hasAttribute('data-theme')) {
-        el.dataset.theme = theme;
-      }
-    });
-    if (window.twttr?.widgets) window.twttr.widgets.load();
-  };
-  applyTweetTheme();
-  new MutationObserver(applyTweetTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-});
-</script>
