@@ -20,25 +20,25 @@ ID は投稿 URL `https://x.com/TwitterDev/status/1234567890123456789` の末尾
 
 ### テーマの切り替え
 
-`theme` パラメータを指定するとダークテーマで表示できます。
+このサイトではページのライト／ダークテーマに合わせて X ウィジェットのテーマも自動で切り替わります。
+特定の投稿だけ固定したい場合は `theme` パラメータに `light` か `dark` を指定してください。
 
 ```markdown
 {{< tweet 1234567890123456789 theme="dark" >}}
 ```
 
-指定できる値は `light`（デフォルト）と `dark` の 2 種類のみです。ページのライト／ダークテーマに合わせて自動で切り替える仕組みはありません。
-自動化したい場合は、記事内の `blockquote.twitter-tweet` 要素の `data-theme` 属性を
-JavaScript などで書き換えた後に `twttr.widgets.load()` を呼び出すなど、独自の実装が必要です。
-
-PaperMod テーマを利用している場合は、`layouts/partials/extend_body.html` に以下のスクリプトを追加すると、
-サイトのライト／ダークテーマ切り替えに合わせてウィジェットのテーマも更新できます。
+PaperMod テーマを利用している場合は、`layouts/partials/extend_body.html` に以下のスクリプトを配置することで、ページのテーマ切り替え時に埋め込みも再描画されます（`data-theme` を明示したものは上書きされません）。
 
 ```html
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const applyTweetTheme = () => {
     const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-    document.querySelectorAll('blockquote.twitter-tweet').forEach(el => el.dataset.theme = theme);
+    document.querySelectorAll('blockquote.twitter-tweet').forEach(el => {
+      if (!el.hasAttribute('data-theme')) {
+        el.dataset.theme = theme;
+      }
+    });
     if (window.twttr?.widgets) window.twttr.widgets.load();
   };
   applyTweetTheme();
