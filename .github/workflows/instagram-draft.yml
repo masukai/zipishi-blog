@@ -1,0 +1,59 @@
+name: Prepare Instagram Drafts
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'content/posts/**'
+  workflow_dispatch:
+    inputs:
+      post:
+        description: 'Path to the Markdown post to process (e.g., content/posts/first-post.md)'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Collect posts
+        id: collect
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.post }}" ]; then
+            echo "${{ github.event.inputs.post }}" > posts.txt
+          else
+            git fetch --no-tags --prune --depth=2 origin
+            git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- 'content/posts/**/*.md' > posts.txt
+          fi
+          cat posts.txt
+          if [ -s posts.txt ]; then
+            echo "has_posts=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_posts=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate drafts
+        if: steps.collect.outputs.has_posts == 'true'
+        run: |
+          mkdir -p instagram_drafts
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            python scripts/prepare_instagram.py "$file" --outdir instagram_drafts
+          done < posts.txt
+
+      - name: Upload artifacts
+        if: steps.collect.outputs.has_posts == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: instagram-drafts
+          path: instagram_drafts
