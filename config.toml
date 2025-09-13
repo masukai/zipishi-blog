@@ -1,5 +1,6 @@
 baseURL = "https://zipishi.com/"
 languageCode = "ja"
+hasCJKLanguage = true
 title = "ぢぴ氏の育児奮闘記"
 theme = "PaperMod"
 enableGitInfo = true
