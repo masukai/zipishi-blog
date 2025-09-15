@@ -7,6 +7,7 @@ cover:
   relative: false
   hiddenInSingle: true
 date: 2025-09-12T21:00:00+09:00
+lastmod: 2025-09-12T21:00:00+09:00
 tags: ["ブログ", "育児", "分担"]
 categories: ["小言"]
 Author: "パパ氏"

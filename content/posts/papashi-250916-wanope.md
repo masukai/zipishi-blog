@@ -7,6 +7,7 @@ cover:
   relative: false
   hiddenInSingle: true
 date: 2025-09-16T21:30:00+09:00
+lastmod: 2025-09-16T21:30:00+09:00
 tags: ["ブログ", "育児", "ワンオペ"]
 categories: ["日記"]
 Author: "パパ氏"
