@@ -1,10 +1,10 @@
-name: Prepare Instagram Drafts
+name: [Don't use⚠️] Prepare Instagram Drafts
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'content/posts/**'
+  # push:
+  #   branches: [ main ]
+  #   paths:
+  #     - 'content/posts/**'
   workflow_dispatch:
     inputs:
       post:
