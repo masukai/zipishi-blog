@@ -21,10 +21,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
 
-      - name: Install dependencies
-        run: pip install pyyaml
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick ffmpeg
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip pyyaml
 
       - name: Collect posts
         id: collect

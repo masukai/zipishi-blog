@@ -11,6 +11,7 @@ Dependencies: ImageMagick (magick) and ffmpeg, PyYAML.
 
 import argparse
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -47,10 +48,26 @@ def make_caption(data):
     return "\n".join(lines)
 
 
-def process_image(cover_path: pathlib.Path, dest_image: pathlib.Path, dest_video: pathlib.Path):
+def resolve_tool(*candidates: str) -> str:
+    """Return the first available executable from *candidates* or raise."""
+
+    for name in candidates:
+        path = shutil.which(name)
+        if path:
+            return path
+    raise FileNotFoundError(" or ".join(f"'{name}'" for name in candidates))
+
+
+def process_image(
+    cover_path: pathlib.Path,
+    dest_image: pathlib.Path,
+    dest_video: pathlib.Path,
+    magick_cmd: str,
+    ffmpeg_cmd: str,
+):
     # Create square 1080x1080 image
     subprocess.run([
-        "magick",
+        magick_cmd,
         str(cover_path),
         "-resize",
         "1080x1080^",
@@ -63,7 +80,7 @@ def process_image(cover_path: pathlib.Path, dest_image: pathlib.Path, dest_video
 
     # Create a 5 second reel video from the image
     subprocess.run([
-        "ffmpeg",
+        ffmpeg_cmd,
         "-y",
         "-loop",
         "1",
@@ -99,7 +116,19 @@ def main():
         dest_image = out_dir / "image.jpg"
         dest_video = out_dir / "reel.mp4"
         if cover_path.exists():
-            process_image(cover_path, dest_image, dest_video)
+            try:
+                magick_cmd = resolve_tool("magick", "convert")
+                ffmpeg_cmd = resolve_tool("ffmpeg")
+            except FileNotFoundError as exc:
+                missing = str(exc)
+                print(
+                    f"Required dependency not found: {missing}. "
+                    "Ensure the tool is installed and available on PATH.",
+                    file=sys.stderr,
+                )
+                sys.exit(2)
+
+            process_image(cover_path, dest_image, dest_video, magick_cmd, ffmpeg_cmd)
         else:
             print(f"Cover image not found: {cover_path}", file=sys.stderr)
     else:
