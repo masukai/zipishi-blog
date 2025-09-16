@@ -13,6 +13,7 @@
 - [ブログ更新方法](blog-posting.md)
 - [プルリクエストの作成と承認](pull-request.md)
 - [その他必要なページの作成](other-pages.md)
+- [SNS投稿の埋め込み](shortcodes/README.md)
 - [初期設定](setup.md)
 - [Gemini CLI による GitHub Actions の設定と PR レビュー](gemini-cli.md)
 
