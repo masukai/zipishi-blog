@@ -1,0 +1,86 @@
+name: Cloudflare Pages バッチビルド
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Cloudflare Pages でビルドするブランチ'
+        required: false
+        default: 'main'
+  schedule:
+    - cron: '0 15 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-build:
+    name: Build trigger
+    if: ${{ github.event_name != 'schedule' || vars.CLOUDFLARE_SCHEDULE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required secrets
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          missing=0
+          for var in CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_PROJECT_NAME CLOUDFLARE_API_TOKEN; do
+            if [ -z "${!var}" ]; then
+              echo "::error::${var} が設定されていません" >&2
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+      - name: Trigger Cloudflare Pages build
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          INPUT_TARGET_BRANCH: ${{ github.event.inputs.target_branch }}
+          DEFAULT_BRANCH: ${{ vars.CLOUDFLARE_DEFAULT_BRANCH }}
+        run: |
+          set -euo pipefail
+
+          DEFAULT_BRANCH="${DEFAULT_BRANCH:-main}"
+
+          TARGET_BRANCH="$INPUT_TARGET_BRANCH"
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH="$DEFAULT_BRANCH"
+          fi
+
+          echo "Using branch: $TARGET_BRANCH"
+
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          fi
+
+          payload=$(jq -n --arg branch "$TARGET_BRANCH" '{
+            deployment_trigger: { type: "manual" },
+            production_branch: $branch
+          }')
+
+          response=$(curl -sS -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CLOUDFLARE_PROJECT_NAME}/deployments" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+
+          echo "Cloudflare API response:"
+          echo "$response" | jq '.'
+
+          success=$(echo "$response" | jq -r '.success')
+          if [ "$success" != "true" ]; then
+            message=$(echo "$response" | jq -r '.errors[0].message // "Unknown error"')
+            echo "::error::Cloudflare build trigger failed: $message" >&2
+            exit 1
+          fi
+
+          deployment_id=$(echo "$response" | jq -r '.result.id')
+          deployment_url=$(echo "$response" | jq -r '.result.url // empty')
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "::notice::Cloudflare Pages deployment triggered. ID: $deployment_id URL: $deployment_url"
