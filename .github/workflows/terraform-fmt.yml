@@ -1,0 +1,35 @@
+name: Terraform Format Check
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect Terraform files
+        id: detect
+        run: |
+          files=$(git ls-files -- '*.tf' '*.tfvars' || true)
+          if [ -n "$files" ]; then
+            echo "has_tf=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_tf=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Terraform
+        if: steps.detect.outputs.has_tf == 'true'
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Run terraform fmt check
+        if: steps.detect.outputs.has_tf == 'true'
+        run: terraform fmt -check -recursive
+
+      - name: Skip terraform fmt (no files found)
+        if: steps.detect.outputs.has_tf != 'true'
+        run: echo "No Terraform files found. Skipping fmt check."
