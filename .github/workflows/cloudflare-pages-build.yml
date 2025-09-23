@@ -45,12 +45,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          DEFAULT_BRANCH="${DEFAULT_BRANCH:-main}"
+
           TARGET_BRANCH="$INPUT_TARGET_BRANCH"
           if [ -z "$TARGET_BRANCH" ]; then
             TARGET_BRANCH="$DEFAULT_BRANCH"
-          fi
-          if [ -z "$TARGET_BRANCH" ]; then
-            TARGET_BRANCH="main"
           fi
 
           echo "Using branch: $TARGET_BRANCH"

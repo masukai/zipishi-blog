@@ -2,7 +2,7 @@
 
 ## 概要
 
-このリポジトリには Cloudflare Pages のビルドを手動・定期実行するための GitHub Actions ワークフロー（`.github/workflows/cloudflare-pages-build.yml`）を追加しました。Cloudflare API を用いて Pages のデプロイをトリガーする仕組みになっているため、リポジトリから直接バッチ処理としてビルドを走らせることができます。
+このリポジトリには Cloudflare Pages のビルドを手動・定期実行するための GitHub Actions ワークフロー（`.github/workflows/cloudflare-pages-build.yml`）があります。Cloudflare API を用いて Pages のデプロイをトリガーする仕組みになっているため、リポジトリから直接バッチ処理としてビルドを走らせることができます。
 
 ## 事前準備
 
