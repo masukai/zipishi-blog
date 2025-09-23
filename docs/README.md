@@ -17,6 +17,7 @@
 - [初期設定](setup.md)
 - [Instagram運用ガイド](instagram.md)
 - [Gemini CLI による GitHub Actions の設定と PR レビュー](gemini-cli.md)
+- [Cloudflare Pages バッチビルド手順](cloudflare-pages-batch.md)
 
 ## 構成図
 
