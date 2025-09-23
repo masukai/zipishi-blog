@@ -10,7 +10,6 @@
 ## 関連ドキュメント
 
 - [プロジェクト構造や運用の基本](CONTRIBUTING.md)
-- [Codex 用開発環境セットアップ](codex-setup.md)
 - [ブログ更新方法](blog-posting.md)
 - [プルリクエストの作成と承認](pull-request.md)
 - [その他必要なページの作成](other-pages.md)
