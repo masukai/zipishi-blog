@@ -125,7 +125,7 @@ jobs:
               ],
               "telemetry": {
                 "enabled": false,
-                "target": "none"
+                "target": "local"
               },
               "sandbox": false
             }
