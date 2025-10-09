@@ -16,3 +16,9 @@ rm hugo.toml
 hugo server -D
 ```
 
+うまく表示されない場合、PaperModの初期化ができていないかもしれません。
+以下のコマンドで解消します!
+
+```bash
+git submodule update --init --recursive
+```
