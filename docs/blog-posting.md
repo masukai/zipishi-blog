@@ -143,6 +143,12 @@ cd Desktop/GitHub/zipishi-blog
 hugo server -D
 ```
 
+未来に公開予定の記事も確認する場合は、以下のコマンドになります。
+
+```bash
+hugo server -D -F
+```
+
 `localhost:1313`にアクセスしてください。
 見え方が確認できます。
 
