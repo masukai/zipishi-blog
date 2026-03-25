@@ -63,9 +63,9 @@ draft: false
 
 最近、Xを見ていたら、子育ての献立の苦労や工夫が話題になっていたのだよ(^o^)
 
-{{< tweet user="hanamama_ikuji" id="1977255468231016929" >}}
-{{< tweet user="hanamama_ikuji" id="1977433409963376797" >}}
-{{< tweet user="hanamama_ikuji" id="1977643885322211560" >}}
+{{< x user="hanamama_ikuji" id="1977255468231016929" >}}
+{{< x user="hanamama_ikuji" id="1977433409963376797" >}}
+{{< x user="hanamama_ikuji" id="1977643885322211560" >}}
 
 ## 献立を考える手間を少なくする(買い物も楽になる)魔法
 
