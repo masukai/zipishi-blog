@@ -7,6 +7,7 @@ enableGitInfo = true
 disqusShortname = "zipishi"
 
 [params]
+  author = "ぢぴ氏"
   defaultTheme = "auto"             # ダーク・ライト自動切替
   ShowPostMeta = true               # メタ情報（日付・著者など）を表示
   ShowLastMod = true                # 最終更新日も表示
