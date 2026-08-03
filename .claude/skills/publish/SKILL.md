@@ -51,5 +51,5 @@ PR を作成したら以下を伝える:
    - `image-guard.yml`: 画像サイズ検証
    - `extension-check.yml`: 拡張子の小文字確認
 3. レビューと CI が通ったら **main へマージ**する
-4. マージすると **Cloudflare Pages に自動デプロイ**され、数分後に https://zipishi.com に反映される
+4. マージすると **Cloudflare Pages に自動デプロイ**され、数分後に https://zipishi-blog.pages.dev に反映される
 5. 追加レビューが欲しい場合は PR コメントに `@gemini-cli /review` と書くと再レビューしてくれる
